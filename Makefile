@@ -48,6 +48,15 @@ dev-tools: ## Start development tools (Redis Commander, Adminer)
 	@echo "$(YELLOW)Redis Commander: http://localhost:8081$(NC)"
 	@echo "$(YELLOW)Adminer: http://localhost:8082$(NC)"
 
+.PHONY: dev-create-db
+dev-create-db: ## Create development database
+	@echo "$(GREEN)Creating development database...$(NC)"
+	@echo "$(YELLOW)Waiting for PostgreSQL to be ready...$(NC)"
+	@sleep 8
+	@docker exec -it gonotes_db_dev psql -U postgres -c "DROP DATABASE IF EXISTS gonotes_dev;" 2>/dev/null || true
+	@docker exec -it gonotes_db_dev psql -U postgres -c "CREATE DATABASE gonotes_dev;"
+	@echo "$(GREEN)Development database created successfully!$(NC)"
+
 .PHONY: dev-migrate
 dev-migrate: ## Run database migrations for development
 	@echo "$(GREEN)Running database migrations...$(NC)"
@@ -76,7 +85,7 @@ dev-app: ## Start development application in container
 	@echo "$(GREEN)Development application started!$(NC)"
 
 .PHONY: dev-start
-dev-start: dev-db dev-migrate dev-run ## Start complete development environment
+dev-start: dev-db dev-create-db dev-migrate dev-run ## Start complete development environment
 
 .PHONY: dev-stop
 dev-stop: ## Stop development services
@@ -158,6 +167,15 @@ prod-build: ## Build production Docker image
 	@docker build -f Dockerfile.prod -t gonotes:latest .
 	@echo "$(GREEN)Production image built successfully!$(NC)"
 
+.PHONY: prod-create-db
+prod-create-db: ## Create production database
+	@echo "$(GREEN)Creating production database...$(NC)"
+	@echo "$(YELLOW)Waiting for PostgreSQL to be ready...$(NC)"
+	@sleep 10
+	@docker exec -it gonotes_db_prod psql -U postgres -c "DROP DATABASE IF EXISTS gonotes;" 2>/dev/null || true
+	@docker exec -it gonotes_db_prod psql -U postgres -c "CREATE DATABASE gonotes;"
+	@echo "$(GREEN)Production database created successfully!$(NC)"
+
 .PHONY: prod-start
 prod-start: ## Start production services
 	@echo "$(GREEN)Starting production services...$(NC)"
@@ -196,7 +214,7 @@ prod-migrate: ## Run database migrations for production
 	@docker exec gonotes_app migrate -path ./migrations -database "$(MIGRATE_URL)" up
 
 .PHONY: prod-deploy
-prod-deploy: prod-build prod-start prod-migrate ## Deploy to production
+prod-deploy: prod-build prod-start prod-create-db prod-migrate ## Deploy to production
 
 .PHONY: prod-enhanced
 prod-enhanced: ## Deploy enhanced production setup with monitoring
