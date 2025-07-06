@@ -1,0 +1,103 @@
+# Development Docker Compose Configuration
+version: '3.8'
+
+services:
+  # Application for development
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: gonotes_app_dev
+    ports:
+      - "8080:8080"
+      - "2345:2345"  # Delve debug port
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=gonotes_dev
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=dev_secret_key_change_in_production
+      - JWT_EXPIRE=15m
+      - REFRESH_EXPIRE=7d
+      - GIN_MODE=debug
+      - LOG_LEVEL=debug
+    volumes:
+      - .:/app:cached
+      - go_mod_cache:/go/pkg/mod
+      - go_build_cache:/root/.cache/go-build
+    networks:
+      - gonotes-dev-network
+    restart: unless-stopped
+    # Override command for development
+    command: air -c .air.toml
+
+  # Database for development
+  db:
+    image: postgres:15-alpine
+    container_name: gonotes_db_dev
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gonotes_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - gonotes-dev-network
+    restart: unless-stopped
+
+  # Redis for development
+  redis:
+    image: redis:7-alpine
+    container_name: gonotes_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - gonotes-dev-network
+    restart: unless-stopped
+
+  # Optional: Redis Commander for development debugging
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: gonotes_redis_commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - gonotes-dev-network
+    restart: unless-stopped
+
+  # Optional: Adminer for database management
+  adminer:
+    image: adminer:4.8.1-standalone
+    container_name: gonotes_adminer
+    ports:
+      - "8082:8080"
+    depends_on:
+      - db
+    networks:
+      - gonotes-dev-network
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  go_mod_cache:
+  go_build_cache:
+
+networks:
+  gonotes-dev-network:
+    driver: bridge 

@@ -1,0 +1,142 @@
+# Git files and history
+.git
+.gitignore
+.gitattributes
+.github/
+
+# Documentation and README files
+README.md
+docs/
+*.md
+*.pdf
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment and configuration files
+.env*
+*.env
+config.local.*
+
+# Log files and temporary directories
+*.log
+logs/
+tmp/
+temp/
+.tmp/
+
+# Test files and coverage reports
+*_test.go
+*.test
+coverage.out
+coverage.html
+test_*.txt
+benchmark_results/
+
+# Build artifacts and binaries
+bin/
+build/
+dist/
+main
+gonotes
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Docker related files (not needed in build context)
+docker-compose*.yaml
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Development tools and configurations
+.air.toml
+air.toml
+Makefile
+aliases.sh
+
+# Monitoring and external service configs (mounted as volumes)
+prometheus/
+grafana/
+loki/
+promtail/
+nginx/
+postgresql/
+redis/
+
+# Backup and script files (mounted as volumes)
+backups/
+scripts/
+
+# Migration files are copied explicitly when needed
+# migrations/
+
+# SSL certificates and keys (mounted as volumes)
+ssl/
+certs/
+*.pem
+*.key
+*.crt
+*.csr
+
+# Node.js files (if any)
+node_modules/
+package*.json
+yarn.lock
+npm-debug.log*
+
+# Python files (if any)
+__pycache__/
+*.py[cod]
+venv/
+.python-version
+
+# Database files
+*.db
+*.sqlite*
+
+# Archive files
+*.tar
+*.tar.gz
+*.zip
+*.rar
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor backup files
+*~
+.#*
+\#*#
+
+# Local data and uploads (mounted as volumes)
+uploads/
+data/
+storage/
+
+# Performance test results
+*.pprof
+*.bench
+
+# Vendor directory (Go modules are downloaded in container)
+vendor/
+
+# Local development overrides
+local_*
+dev_*
+
+# Temporary Go build files
+go.work
+go.work.sum 
