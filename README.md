@@ -119,249 +119,25 @@ gonotes/
 │   └── utils/            # Helper functions
 ├── migrations/           # Database migration files
 ├── docs/                 # API documentation
-├── .env                  # Environment variables
-├── docker-compose.yaml   # Development setup
-├── Dockerfile.dev       # Development container build
-├── Dockerfile.prod      # Production container build
-├── air.toml             # Hot reload config
-└── README.md
-```
-
-## 🔧 Setup Development
-
-### Prerequisites
-- Go 1.21+
-- Docker & Docker Compose
-- Air (untuk hot reload)
-
-### Installation
-
-1. **Clone & Setup**
-   ```bash
-   git clone <repository-url>
-   cd gonotes
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   go mod download
-   ```
-
-3. **Install Air (Hot Reload)**
-   ```bash
-   go install github.com/cosmtrek/air@latest
-   ```
-
-4. **Setup Environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env sesuai kebutuhan
-   ```
-
-5. **Run with Docker Compose**
-   ```bash
-   docker-compose up --build
-   ```
-
-6. **Run Development (Hot Reload)**
-   ```bash
-   # Start database & redis
-   docker-compose up db redis -d
-   
-   # Run app with hot reload
-   air
-   ```
-
-## 🌐 API Endpoints
-
-### Health Check
-- `GET /health` - Health check endpoint
-
-### Authentication
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/refresh` - Refresh token
-- `POST /api/v1/auth/logout` - User logout
-
-## 📊 Database Schema
-
-### Users
-- `id` (UUID, PK)
-- `email` (TEXT, UNIQUE)
-- `password` (TEXT)
-- `full_name` (TEXT)
-- `created_at` (TIMESTAMP)
-- `updated_at` (TIMESTAMP)
-
-### Notes
-- `id` (UUID, PK)
-- `user_id` (UUID, FK)
-- `title` (TEXT)
-- `content` (TEXT)
-- `created_at` (TIMESTAMP)
-- `updated_at` (TIMESTAMP)
-
-### Sessions
-- `id` (UUID, PK)
-- `user_id` (UUID, FK)
-- `refresh_token` (TEXT)
-- `user_agent` (TEXT)
-- `ip_address` (TEXT)
-- `is_valid` (BOOLEAN)
-- `created_at` (TIMESTAMP)
-- `expires_at` (TIMESTAMP)
-
-## 🔐 Environment Variables
-
-```env
-APP_PORT=8080
-
-# PostgreSQL
-DB_HOST=db
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=gonotes
-
-# Redis
-REDIS_HOST=redis
-REDIS_PORT=6379
-
-# Auth
-JWT_SECRET=supersecretkey
-JWT_EXPIRE=15m
-REFRESH_EXPIRE=7d
-```
-
-## 📝 Development Roadmap
-
-- [x] **Batch 1**: Project Setup & Auth Basic
-- [x] **Batch 2**: Notes CRUD Module
-- [x] **Batch 3**: User Profile Module
-- [x] **Batch 4**: Session Management & Security
-- [x] **Batch 5**: Testing & Documentation
-
-## 🚀 Quick Start
-
-### Development
-```bash
-# Quick setup
-make dev-setup
-make dev-start
-
-# Or use aliases
-source aliases.sh
-gn-quick-start
-```
-
-### Production
-```bash
-# Deploy to production
-make prod-deploy
-
-# Or use aliases
-source aliases.sh
-gn-deploy
-```
-
-## 🛠️ Available Commands
-
-### Make Commands
-```bash
-make help                    # Show all available commands
-make dev-start              # Start development environment
-make test-all               # Run all tests
-make prod-deploy            # Deploy to production
-```
-
-### Quick Aliases
-```bash
-# Load aliases
-source aliases.sh
-
-# Development
-gn-dev-start               # Start development
-gn-test-all               # Run all tests
-gn-help                   # Show aliases help
-```
-
-## 📁 Project Structure
-
-```
-gonotes/
 ├── scripts/              # Shell scripts for testing
-├── docs/                 # Documentation
 ├── .env.dev             # Development environment
 ├── .env.prod            # Production environment
 ├── docker-compose.dev.yaml   # Development Docker
 ├── docker-compose.prod.yaml  # Production Docker
+├── Dockerfile.dev       # Development container build
+├── Dockerfile.prod      # Production container build
 ├── Makefile             # Command shortcuts
 ├── aliases.sh           # Shell aliases
-└── DEVELOPMENT_GUIDE.md # Complete development guide
+├── air.toml             # Hot reload config
+└── README.md
 ```
 
-## 🔒 SSL/TLS Setup (FREE!)
-
-GoNotes mendukung SSL/TLS gratis menggunakan Let's Encrypt:
-
-```bash
-# Setup SSL dengan domain dan email
-make ssl-setup DOMAIN=yourdomain.com EMAIL=your-email@example.com
-
-# Start production dengan SSL
-make ssl-start
-
-# Check SSL status
-make ssl-check
-
-# Renew SSL (otomatis setiap 12 jam)
-make ssl-renew
-```
-
-**Supported SSL Solutions:**
-- ✅ **Let's Encrypt** - Free, auto-renewal, trusted certificates
-- ✅ **Cloudflare SSL** - Free with CDN and additional security
-- ✅ **AWS Certificate Manager** - Free for AWS services
-
-## 📚 Documentation
-
-### API Documentation
-- **[Complete API Docs](docs/API_Documentation.md)** - Full API reference
-- **[Postman Collection](docs/GoNotes_API_Collection.postman_collection.json)** - Ready-to-use API testing
-- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)** - Complete development setup
-- **[Performance Testing Guide](docs/PERFORMANCE_TESTING_GUIDE.md)** - Comprehensive performance testing
-
-### Deployment Documentation
-- **[Enhanced Docker Production](docs/ENHANCED_DOCKER_PRODUCTION.md)** - Enterprise production setup with monitoring
-- **[Development Dockerfile Guide](docs/DOCKERFILE_DEVELOPMENT.md)** - Complete development container setup
-- **[SSL Setup Guide](docs/SSL_SETUP_GUIDE.md)** - Complete SSL/TLS configuration
-- **[SSL Quick Reference](docs/SSL_QUICK_REFERENCE.md)** - SSL commands and troubleshooting
-- **[Final Cleanup & Optimization](docs/FINAL_CLEANUP_OPTIMIZATION.md)** - Complete cleanup and optimization guide
-
-### Architecture Documentation
-- **[Project Reorganization](docs/PROJECT_REORGANIZATION.md)** - Project structure changes and improvements
-- **[Database Schema](docs/DATABASE_SCHEMA.md)** - Database design
-- **[Security Model](docs/SECURITY_MODEL.md)** - Security implementation
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
-
-## 🛠️ Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
-- Go 1.19 or later
-- PostgreSQL 15
-- Redis 7
-- Docker & Docker Compose (optional)
+- Go 1.21+
+- Docker & Docker Compose
+- PostgreSQL 15 & Redis 7 (optional if using Docker)
 - jq (for testing scripts)
 
 ### Option 1: Docker Setup (Recommended)
@@ -434,120 +210,6 @@ make prod-deploy
 make ssl-setup DOMAIN=yourdomain.com EMAIL=admin@yourdomain.com
 make ssl-start
 ```
-
-### Quick Development Commands
-```bash
-# Load aliases for easy commands
-source aliases.sh
-
-# Quick start development
-gn-quick-start
-
-# Run all tests
-gn-test-all
-
-# View logs
-gn-logs
-
-# Stop everything
-gn-stop
-```
-
-## 📊 Testing
-
-### Unit Tests
-```bash
-# Run all unit tests
-make test-unit
-
-# Run specific service tests
-go test -v ./internal/service/user_test.go
-go test -v ./internal/service/note_test.go
-go test -v ./internal/service/session_test.go
-
-# Run with coverage
-go test -v -cover ./internal/service/...
-```
-
-### Integration Tests
-```bash
-# Run complete integration test suite (with Docker)
-make test-integration
-
-# Run simple integration tests (lightweight)
-./scripts/simple_integration_test.sh
-
-# Run integration test with proper setup
-./scripts/run_integration_test.sh
-```
-
-### API Testing
-```bash
-# Test specific endpoints
-curl -X GET http://localhost:8080/health
-curl -X POST http://localhost:8080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","full_name":"Test User"}'
-
-# Run comprehensive API tests
-./scripts/test_api.sh
-```
-
-### Test Coverage
-- **16 Unit Tests**: 100% pass rate covering all service layers
-- **10 Integration Tests**: End-to-end API testing with Docker
-- **8 Simple Integration Tests**: Lightweight API testing
-- **Comprehensive Scenarios**: Success and error cases covered
-- **Performance Testing**: Load testing, stress testing, spike testing
-
-## 🏗️ Architecture
-
-### Clean Architecture Structure
-```
-cmd/                    # Application entry points
-internal/
-├── config/            # Configuration management
-├── handler/           # HTTP handlers (controllers)
-├── middleware/        # HTTP middleware
-├── model/            # Data models and DTOs
-├── repository/       # Data access layer
-├── service/          # Business logic layer
-└── utils/            # Utility functions
-migrations/           # Database migrations
-scripts/             # Development and deployment scripts
-```
-
-### Database Schema
-- **Users**: User accounts with secure password hashing
-- **Sessions**: JWT session tracking with device information
-- **Notes**: Rich notes with tags, public/private status, and search
-- **Audit**: Security audit logging for compliance
-
-## 📋 API Endpoints
-
-### Authentication
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/refresh` - Token refresh
-- `POST /api/v1/auth/logout` - User logout
-
-### User Management
-- `GET /api/v1/user/profile` - Get user profile
-- `PUT /api/v1/user/profile` - Update user profile
-- `GET /api/v1/user/sessions/active` - Get active sessions
-- `DELETE /api/v1/user/sessions` - Logout from all devices
-
-### Notes Management
-- `GET /api/v1/notes` - Get user notes (with pagination)
-- `POST /api/v1/notes` - Create new note
-- `GET /api/v1/notes/{id}` - Get specific note
-- `PUT /api/v1/notes/{id}` - Update note
-- `DELETE /api/v1/notes/{id}` - Delete note
-- `POST /api/v1/notes/search` - Search notes
-- `GET /api/v1/notes/public` - Get public notes
-
-### System
-- `GET /health` - Health check endpoint
 
 ## 🔧 Development Commands
 
@@ -649,93 +311,131 @@ gn-status              # Show system status
 gn-clean               # Clean everything
 ```
 
-### Command Examples
+## 📊 Testing
+
+### Unit Tests
 ```bash
-# Start development environment
-make dev-start
-# or
-gn-start
+# Run all unit tests
+make test-unit
 
-# Run tests
-make test-all
-# or 
-gn-test-all
+# Run specific service tests
+go test -v ./internal/service/user_test.go
+go test -v ./internal/service/note_test.go
+go test -v ./internal/service/session_test.go
 
-# Deploy to production with SSL
-make prod-deploy
-make ssl-setup DOMAIN=example.com EMAIL=admin@example.com
-# or
-gn-deploy
-gn-ssl-setup example.com admin@example.com
-
-# Check application status
-make health
-# or
-gn-status
+# Run with coverage
+go test -v -cover ./internal/service/...
 ```
 
-## 🔐 SSL/TLS Setup
-
-### Let's Encrypt (Free SSL)
+### Integration Tests
 ```bash
-# Setup SSL with Let's Encrypt
-make ssl-setup DOMAIN=yourdomain.com EMAIL=admin@yourdomain.com
+# Run complete integration test suite (with Docker)
+make test-integration
 
-# Start with SSL
-make ssl-start
+# Run simple integration tests (lightweight)
+./scripts/simple_integration_test.sh
 
-# Renew certificates
-make ssl-renew
+# Run integration test with proper setup
+./scripts/run_integration_test.sh
 ```
 
-### SSL Features
-- **Free Certificates**: Let's Encrypt integration
-- **Auto-renewal**: Automatic certificate renewal every 12 hours
-- **Security Grade A**: Optimized for maximum security
-- **Multiple Domains**: Support for multiple domain certificates
+### API Testing
+```bash
+# Test specific endpoints
+curl -X GET http://localhost:8080/health
+curl -X POST http://localhost:8080/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123","full_name":"Test User"}'
 
-## 📈 Performance & Scalability
+# Run comprehensive API tests
+./scripts/test_api.sh
+```
 
-### Performance Testing
-- **Load Testing**: Normal expected load testing
-- **Stress Testing**: Beyond normal capacity testing
-- **Spike Testing**: Sudden load increases testing
-- **Comprehensive Scripts**: Automated performance testing suite
-- **Performance Monitoring**: System resource monitoring during tests
+### Test Coverage
+- **16 Unit Tests**: 100% pass rate covering all service layers
+- **10 Integration Tests**: End-to-end API testing with Docker
+- **8 Simple Integration Tests**: Lightweight API testing
+- **Comprehensive Scenarios**: Success and error cases covered
+- **Performance Testing**: Load testing, stress testing, spike testing
+- **Service Layer**: 100% coverage
+- **Handler Layer**: 95% coverage
+- **Repository Layer**: 90% coverage
+- **Overall**: 95% code coverage
 
-### Caching Strategy
-- **Redis Integration**: Session and profile caching
-- **Cache TTL**: Configurable cache expiration
-- **Cache Invalidation**: Automatic cache cleanup on updates
+## 🏗️ Architecture
 
-### Rate Limiting
-- **User-based**: Different limits for authenticated users
-- **IP-based**: Protection against anonymous abuse
-- **Endpoint-specific**: Higher limits for auth endpoints
+### Clean Architecture Structure
+```
+cmd/                    # Application entry points
+internal/
+├── config/            # Configuration management
+├── handler/           # HTTP handlers (controllers)
+├── middleware/        # HTTP middleware
+├── model/            # Data models and DTOs
+├── repository/       # Data access layer
+├── service/          # Business logic layer
+└── utils/            # Utility functions
+migrations/           # Database migrations
+scripts/             # Development and deployment scripts
+```
 
-### Database Optimization
-- **Indexing**: Proper database indexes for performance
-- **Connection Pooling**: Efficient database connections
-- **Migration System**: Version-controlled database changes
+### Database Schema
+- **Users**: User accounts with secure password hashing
+- **Sessions**: JWT session tracking with device information
+- **Notes**: Rich notes with tags, public/private status, and search
+- **Audit**: Security audit logging for compliance
 
-## 🛡️ Security Features
+## 📋 API Endpoints
 
-### Authentication Security
-- **JWT Tokens**: Stateless authentication with short expiry
-- **Refresh Tokens**: Long-lived tokens with rotation
-- **Session Tracking**: Device and IP-based session management
+### Health Check
+- `GET /health` - Health check endpoint
 
-### Application Security
-- **Input Validation**: Comprehensive request validation
-- **SQL Injection Protection**: Parameterized queries
-- **XSS Protection**: Security headers and content sanitization
-- **CSRF Protection**: CSRF tokens and same-site cookies
+### Authentication
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/refresh` - Token refresh
+- `POST /api/v1/auth/logout` - User logout
 
-### Infrastructure Security
-- **HTTPS Only**: SSL/TLS encryption in production
-- **Security Headers**: HSTS, CSP, and other security headers
-- **Rate Limiting**: Protection against brute force attacks
-- **Audit Logging**: Complete security audit trail
+### User Management
+- `GET /api/v1/user/profile` - Get user profile
+- `PUT /api/v1/user/profile` - Update user profile
+- `GET /api/v1/user/sessions/active` - Get active sessions
+- `DELETE /api/v1/user/sessions` - Logout from all devices
+
+### Notes Management
+- `GET /api/v1/notes` - Get user notes (with pagination)
+- `POST /api/v1/notes` - Create new note
+- `GET /api/v1/notes/{id}` - Get specific note
+- `PUT /api/v1/notes/{id}` - Update note
+- `DELETE /api/v1/notes/{id}` - Delete note
+- `POST /api/v1/notes/search` - Search notes
+- `GET /api/v1/notes/public` - Get public notes
+
+## 🔐 Environment Variables
+
+### Development (.env.dev)
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=gonotes_dev
+REDIS_HOST=localhost
+REDIS_PORT=6379
+JWT_SECRET=dev_supersecretkey_for_testing_only
+```
+
+### Production (.env.prod)
+```env
+DB_HOST=db
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=strong_production_password
+DB_NAME=gonotes_prod
+REDIS_HOST=redis
+REDIS_PORT=6379
+JWT_SECRET=very_strong_production_secret_key
+```
 
 ## 🚀 Deployment
 
@@ -786,84 +486,93 @@ cp .env.prod.enhanced .env.prod
 make prod-start
 ```
 
-## 📝 Environment Variables
+## 🔒 SSL/TLS Setup
 
-### Development (.env.dev)
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=gonotes_dev
-REDIS_HOST=localhost
-REDIS_PORT=6379
-JWT_SECRET=dev_supersecretkey_for_testing_only
+### Let's Encrypt (Free SSL)
+```bash
+# Setup SSL with Let's Encrypt
+make ssl-setup DOMAIN=yourdomain.com EMAIL=admin@yourdomain.com
+
+# Start with SSL
+make ssl-start
+
+# Renew certificates
+make ssl-renew
 ```
 
-### Production (.env.prod)
-```env
-DB_HOST=db
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=strong_production_password
-DB_NAME=gonotes_prod
-REDIS_HOST=redis
-REDIS_PORT=6379
-JWT_SECRET=very_strong_production_secret_key
-```
+### SSL Features
+- **Free Certificates**: Let's Encrypt integration
+- **Auto-renewal**: Automatic certificate renewal every 12 hours
+- **Security Grade A**: Optimized for maximum security
+- **Multiple Domains**: Support for multiple domain certificates
 
-## 🧪 Testing Status
+**Supported SSL Solutions:**
+- ✅ **Let's Encrypt** - Free, auto-renewal, trusted certificates
+- ✅ **Cloudflare SSL** - Free with CDN and additional security
+- ✅ **AWS Certificate Manager** - Free for AWS services
 
-### Unit Tests Status
-- ✅ **User Service**: 4 tests covering registration, login, profile management
-- ✅ **Note Service**: 6 tests covering CRUD operations, search, public notes
-- ✅ **Session Service**: 6 tests covering session lifecycle and management
-- ✅ **Total**: 16 tests with 100% pass rate
+## 📈 Performance & Scalability
 
-### Integration Tests Status
-- ✅ **Framework**: Complete Docker-based integration testing
-- ✅ **API Testing**: Full API endpoint coverage
-- ✅ **Error Handling**: Comprehensive error scenario testing
-- ✅ **Security Testing**: Authentication and authorization validation
+### Performance Testing
+- **Load Testing**: Normal expected load testing
+- **Stress Testing**: Beyond normal capacity testing
+- **Spike Testing**: Sudden load increases testing
+- **Comprehensive Scripts**: Automated performance testing suite
+- **Performance Monitoring**: System resource monitoring during tests
 
-### Test Coverage
-- **Service Layer**: 100% coverage
-- **Handler Layer**: 95% coverage
-- **Repository Layer**: 90% coverage
-- **Performance Testing**: Comprehensive load and stress testing
-- **Overall**: 95% code coverage
+### Caching Strategy
+- **Redis Integration**: Session and profile caching
+- **Cache TTL**: Configurable cache expiration
+- **Cache Invalidation**: Automatic cache cleanup on updates
 
-## 🤝 Contributing
+### Rate Limiting
+- **User-based**: Different limits for authenticated users
+- **IP-based**: Protection against anonymous abuse
+- **Endpoint-specific**: Higher limits for auth endpoints
 
-### Development Workflow
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Make changes and add tests
-4. Run tests: `make test-all`
-5. Commit changes: `git commit -m 'Add amazing feature'`
-6. Push to branch: `git push origin feature/amazing-feature`
-7. Create Pull Request
+### Database Optimization
+- **Indexing**: Proper database indexes for performance
+- **Connection Pooling**: Efficient database connections
+- **Migration System**: Version-controlled database changes
 
-### Code Standards
-- Follow Go best practices and idioms
-- Add unit tests for new features
-- Update documentation for API changes
-- Use conventional commit messages
+## 🛡️ Security Features
 
-## 📞 Support
+### Authentication Security
+- **JWT Tokens**: Stateless authentication with short expiry
+- **Refresh Tokens**: Long-lived tokens with rotation
+- **Session Tracking**: Device and IP-based session management
 
-### Getting Help
-- **Issues**: [GitHub Issues](https://github.com/yourusername/gonotes/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/gonotes/discussions)
-- **Documentation**: [Wiki](https://github.com/yourusername/gonotes/wiki)
+### Application Security
+- **Input Validation**: Comprehensive request validation
+- **SQL Injection Protection**: Parameterized queries
+- **XSS Protection**: Security headers and content sanitization
+- **CSRF Protection**: CSRF tokens and same-site cookies
 
-### Bug Reports
-Please include:
-- Go version
-- OS and architecture
-- Steps to reproduce
-- Expected vs actual behavior
-- Relevant logs
+### Infrastructure Security
+- **HTTPS Only**: SSL/TLS encryption in production
+- **Security Headers**: HSTS, CSP, and other security headers
+- **Rate Limiting**: Protection against brute force attacks
+- **Audit Logging**: Complete security audit trail
+
+## 📚 Documentation
+
+### API Documentation
+- **[Complete API Docs](docs/API_Documentation.md)** - Full API reference
+- **[Postman Collection](docs/GoNotes_API_Collection.postman_collection.json)** - Ready-to-use API testing
+- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)** - Complete development setup
+- **[Performance Testing Guide](docs/PERFORMANCE_TESTING_GUIDE.md)** - Comprehensive performance testing
+
+### Deployment Documentation
+- **[Enhanced Docker Production](docs/ENHANCED_DOCKER_PRODUCTION.md)** - Enterprise production setup with monitoring
+- **[Development Dockerfile Guide](docs/DOCKERFILE_DEVELOPMENT.md)** - Complete development container setup
+- **[SSL Setup Guide](docs/SSL_SETUP_GUIDE.md)** - Complete SSL/TLS configuration
+- **[SSL Quick Reference](docs/SSL_QUICK_REFERENCE.md)** - SSL commands and troubleshooting
+- **[Final Cleanup & Optimization](docs/FINAL_CLEANUP_OPTIMIZATION.md)** - Complete cleanup and optimization guide
+
+### Architecture Documentation
+- **[Project Reorganization](docs/PROJECT_REORGANIZATION.md)** - Project structure changes and improvements
+- **[Database Schema](docs/DATABASE_SCHEMA.md)** - Database design
+- **[Security Model](docs/SECURITY_MODEL.md)** - Security implementation
 
 ## 🔧 Troubleshooting
 
@@ -994,6 +703,46 @@ redis-cli keys "*"
 # Check database connections
 psql -h localhost -U postgres -c "SELECT count(*) FROM pg_stat_activity;"
 ```
+
+## 📝 Development Roadmap
+
+- [x] **Batch 1**: Project Setup & Auth Basic
+- [x] **Batch 2**: Notes CRUD Module
+- [x] **Batch 3**: User Profile Module
+- [x] **Batch 4**: Session Management & Security
+- [x] **Batch 5**: Testing & Documentation
+
+## 🤝 Contributing
+
+### Development Workflow
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Make changes and add tests
+4. Run tests: `make test-all`
+5. Commit changes: `git commit -m 'Add amazing feature'`
+6. Push to branch: `git push origin feature/amazing-feature`
+7. Create Pull Request
+
+### Code Standards
+- Follow Go best practices and idioms
+- Add unit tests for new features
+- Update documentation for API changes
+- Use conventional commit messages
+
+## 📞 Support
+
+### Getting Help
+- **Issues**: [GitHub Issues](https://github.com/yourusername/gonotes/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/gonotes/discussions)
+- **Documentation**: [Wiki](https://github.com/yourusername/gonotes/wiki)
+
+### Bug Reports
+Please include:
+- Go version
+- OS and architecture
+- Steps to reproduce
+- Expected vs actual behavior
+- Relevant logs
 
 ## 📄 License
 
