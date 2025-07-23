@@ -1,0 +1,171 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Go workspace file
+go.work
+
+# Build output
+dist/
+build/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker files
+# .dockerignore
+
+# SSL/TLS certificates
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Air (live reload tool) temp files
+tmp/
+
+# Test coverage
+coverage.out
+coverage.html
+
+# Profiling files
+*.pprof
+
+# Local configuration overrides
+config.local.yaml
+config.local.yml
+config.local.json
+
+# Backup files
+*.backup
+*.bak
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+*.rar
+
+# Node.js (if you have any frontend assets)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if you have any Python scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local data directories
+data/
+storage/
+
+# Performance test results
+*.bench
+benchmark_results/
+
+# Docker volume data
+postgres_data/
+redis_data/
+
+# Prometheus data
+prometheus_data/
+
+# Local scripts and utilities
+local_*
+
+# Editor backup files
+*~
+.#*
+\#*#
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Local test files
+test_*.tmp
+*_test_output.txt 
+
+# Build artifacts
+main
+audit.log
+
+# SSL certificates
+ssl/
+
+# Deployment files (sensitive for public repo)
+deploy.sh
+
+.claude
+.env
+.env.production
+
+go.sum

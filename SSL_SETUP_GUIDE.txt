@@ -1,0 +1,278 @@
+===============================================================================
+                    SSL CERTIFICATE SETUP GUIDE FOR GONOTES
+                              (Let's Encrypt with Docker)
+===============================================================================
+
+PREREQUISITES:
+- Domain pointing to server IP (domain-example.com -> YOUR_SERVER_IP)
+- Ports 80 and 443 open in firewall
+- Docker and docker-compose installed
+- GoNotes containers running
+
+===============================================================================
+STEP 1: PREPARE FOR CERTIFICATE GENERATION
+===============================================================================
+
+1. Stop nginx container temporarily:
+   docker compose -f docker-compose.prod.yaml stop nginx
+
+2. Create directory for certbot webroot:
+   mkdir -p certbot-www
+
+3. Check domain resolution:
+   ping domain-example.com
+   # Should show your server IP
+
+===============================================================================
+STEP 2: GENERATE SSL CERTIFICATE
+===============================================================================
+
+Run this command (as single line):
+
+docker run --rm -p 80:80 \
+  -v $(pwd)/ssl:/etc/letsencrypt \
+  certbot/certbot certonly --standalone \
+  -d domain-example.com -d www.domain-example.com \
+  --email YOUR_EMAIL@gmail.com --agree-tos --no-eff-email
+
+Expected output:
+- "Successfully received certificate"
+- Certificate saved at: /etc/letsencrypt/live/domain-example.com/fullchain.pem
+- Key saved at: /etc/letsencrypt/live/domain-example.com/privkey.pem
+- Expires on: [3 months from now]
+
+===============================================================================
+STEP 3: VERIFY CERTIFICATE FILES
+===============================================================================
+
+Check if certificates were created:
+ls -la ssl/live/domain-example.com/
+
+Should see:
+- fullchain.pem
+- privkey.pem
+- cert.pem
+- chain.pem
+
+===============================================================================
+STEP 4: UPDATE NGINX CONFIGURATION
+===============================================================================
+
+Edit nginx.conf file and UNCOMMENT (remove #) from these lines:
+
+FROM:
+# listen 443 ssl http2;
+# ssl_certificate /etc/letsencrypt/live/domain-example.com/fullchain.pem;
+# ssl_certificate_key /etc/letsencrypt/live/domain-example.com/privkey.pem;
+# ssl_protocols TLSv1.2 TLSv1.3;
+# ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
+# ssl_prefer_server_ciphers off;
+# ssl_session_cache shared:SSL:10m;
+# ssl_session_timeout 10m;
+
+TO:
+listen 443 ssl http2;
+ssl_certificate /etc/letsencrypt/live/domain-example.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/domain-example.com/privkey.pem;
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
+ssl_prefer_server_ciphers off;
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 10m;
+
+===============================================================================
+STEP 5: UPDATE DOCKER COMPOSE VOLUME MAPPING
+===============================================================================
+
+In docker-compose.prod.yaml, nginx service volumes should be:
+
+volumes:
+  - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  - ./ssl:/etc/letsencrypt:ro
+  - certbot_www:/var/www/certbot:ro
+
+IMPORTANT: Remove the duplicate line:
+- certbot_conf:/etc/letsencrypt:ro
+
+This causes volume mapping conflicts!
+
+===============================================================================
+STEP 6: FIX CERTIFICATE PERMISSIONS
+===============================================================================
+
+Fix certificate file permissions for nginx access:
+sudo chmod 644 ssl/archive/domain-example.com/cert1.pem
+sudo chmod 644 ssl/archive/domain-example.com/chain1.pem  
+sudo chmod 644 ssl/archive/domain-example.com/fullchain1.pem
+sudo chmod 644 ssl/archive/domain-example.com/privkey1.pem
+
+Optional - Fix ownership for nginx user (if permission issues persist):
+sudo chown -R 101:101 ssl/
+
+===============================================================================
+STEP 7: RESTART CONTAINERS
+===============================================================================
+
+Start all containers with SSL enabled:
+docker compose -f docker-compose.prod.yaml down
+docker compose -f docker-compose.prod.yaml up -d
+
+Check container status:
+docker ps
+
+All containers should be running and healthy.
+
+===============================================================================
+STEP 8: TEST SSL CONNECTION
+===============================================================================
+
+Test HTTPS endpoint:
+curl -I https://domain-example.com/health
+
+Expected response:
+HTTP/2 200
+server: nginx/1.29.0
+content-type: application/json
+{"status":"healthy","timestamp":"..."}
+
+Test HTTP redirect:
+curl -I http://domain-example.com/health
+
+Expected response:
+HTTP/1.1 301 Moved Permanently
+location: https://domain-example.com/health
+
+===============================================================================
+STEP 9: VERIFY SSL CERTIFICATE
+===============================================================================
+
+Check certificate details:
+openssl s_client -connect domain-example.com:443 -servername domain-example.com
+
+Or use online tools:
+- https://www.ssllabs.com/ssltest/
+- https://whatsmychaincert.com/
+
+===============================================================================
+TROUBLESHOOTING
+===============================================================================
+
+Problem: Certificate generation fails
+Solution: 
+- Check domain DNS resolution: ping domain-example.com
+- Ensure port 80 is open: sudo ufw status
+- Stop nginx before running certbot
+- Use multiline command format to avoid shell errors
+
+Problem: "sl_certificate_key" unknown directive error
+Solution:
+- Check for typos in nginx.conf (missing 's' in ssl_certificate_key)
+- Verify all SSL directives are spelled correctly
+
+Problem: "cannot load certificate" error
+Solution:
+- Fix file permissions: sudo chmod 644 ssl/archive/gonotes.fun/*
+- Check volume mapping conflicts in docker-compose.prod.yaml
+- Ensure no duplicate /etc/letsencrypt mappings
+- Restart containers: docker compose -f docker-compose.prod.yaml down && up -d
+
+Problem: Nginx container keeps restarting
+Solution:
+- Check nginx logs: docker logs gonotes-nginx-prod
+- Test nginx config: docker exec -it gonotes-nginx-prod nginx -t
+- Verify certificate files accessible inside container
+- Fix ownership if needed: sudo chown -R 101:101 ssl/
+
+Problem: HTTP 405 Method Not Allowed on /health
+Solution:
+- This is normal - health endpoint expects GET not HEAD
+- Use: curl https://gonotes.fun/health (without -I flag)
+- Browser access works fine
+
+Problem: Browser shows "Not Secure" 
+Solution:
+- Clear browser cache
+- Check certificate expiry date
+- Verify domain matches certificate
+- Test with: openssl s_client -connect domain-example.com:443
+
+Problem: Certificate expires
+Solution:
+- Certbot container handles auto-renewal every 12 hours
+- Manual renewal: docker exec gonotes-certbot-prod certbot renew
+- Check renewal logs: docker logs gonotes-certbot-prod
+
+===============================================================================
+CERTIFICATE RENEWAL (AUTOMATIC)
+===============================================================================
+
+The certbot container in docker-compose.prod.yaml automatically renews 
+certificates every 12 hours. No manual intervention needed.
+
+To check renewal status:
+docker logs gonotes-certbot-prod
+
+To force manual renewal:
+docker exec gonotes-certbot-prod certbot renew --dry-run
+
+===============================================================================
+SECURITY BEST PRACTICES
+===============================================================================
+
+1. Regular Updates:
+   - Update docker images monthly
+   - Monitor security advisories
+
+2. Firewall:
+   - Only open necessary ports (80, 443, 22)
+   - Use fail2ban for SSH protection
+
+3. Monitoring:
+   - Set up certificate expiry monitoring
+   - Monitor application logs
+
+4. Backups:
+   - Backup certificate files
+   - Backup application data
+
+===============================================================================
+FILES CREATED/MODIFIED
+===============================================================================
+
+New files:
+- ssl/live/domain-example.com/fullchain.pem
+- ssl/live/domain-example.com/privkey.pem
+- ssl/live/domain-example.com/cert.pem
+- ssl/live/domain-example.com/chain.pem
+- certbot-www/ (directory)
+
+Modified files:
+- nginx.conf (uncommented SSL lines)
+- docker-compose.prod.yaml (volume mapping)
+
+===============================================================================
+FINAL VERIFICATION CHECKLIST
+===============================================================================
+
+✅ Domain resolves to correct IP (domain-example.com -> YOUR_SERVER_IP)
+✅ Certificate generated successfully (Let's Encrypt)
+✅ nginx.conf SSL lines uncommented 
+✅ docker-compose.prod.yaml volume mapping correct (no conflicts)
+✅ All containers running and healthy
+✅ HTTPS endpoint responds correctly (HTTP/2 200)
+✅ HTTP redirects to HTTPS (301 redirect)
+✅ SSL certificate valid (check with browser/tools)
+✅ Auto-renewal configured (certbot container)
+
+SUCCESS INDICATORS:
+- curl -I https://domain-example.com/health returns HTTP/2 response
+- Browser shows padlock icon (secure connection)
+- SSL Labs test shows A+ rating
+- All containers status: Up and healthy
+
+===============================================================================
+END OF GUIDE
+===============================================================================
+
+Date created: 2025-07-22
+GoNotes production SSL setup complete.

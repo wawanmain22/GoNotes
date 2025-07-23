@@ -1,0 +1,69 @@
+# Git
+.git
+.gitignore
+
+# Development files
+.env.dev
+.env.local
+.env.example
+
+# Documentation
+*.md
+LICENSE
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+audit.log
+
+# Test files
+*_test.go
+test/
+coverage.out
+
+# Build artifacts
+dist/
+build/
+main
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yaml
+
+# SSL certificates
+ssl/
+*.pem
+*.key
+*.crt
+
+# Temporary files
+tmp/
+temp/
+
+# Node modules (if any frontend assets)
+node_modules/
+
+# Go vendor (if using)
+vendor/
+
+# Air (live reload tool)
+.air.toml
+air.toml
+
+# Deployment files
+nginx.conf
+SSL_SETUP_GUIDE.txt
+DEPLOYMENT.md
+deploy.sh
